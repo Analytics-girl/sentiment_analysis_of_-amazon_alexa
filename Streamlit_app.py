@@ -1,14 +1,22 @@
-# 1. Save correct files in Colab (pick best model):
-pickle.dump(model_xgb, open('model_xgb.pkl', 'wb'))  # Rename to match app
-pickle.dump(cv, open('vectorizer.pkl', 'wb'))
-files.download('model_xgb.pkl')  # etc.
-
-# 2. Add preprocessing function to Streamlit BEFORE vectorizer:
+import streamlit as st
+import pickle
 import re
 import nltk
 from nltk.stem.porter import PorterStemmer
 from nltk.corpus import stopwords
-nltk.download('stopwords')
+
+# Download nltk data once
+nltk.download('stopwords', quiet=True)
+
+# Load your saved files (from Colab downloads)
+with open("model_xgb.pkl", "rb") as f:    # <- Rename your app to load this
+    model = pickle.load(f)
+with open("vectorizer.pkl", "rb") as f:
+    vectorizer = pickle.load(f)
+with open("scaler.pkl", "rb") as f:        # <- You need scaler too!
+    scaler = pickle.load(f)
+
+# Preprocessing function (exactly like training)
 stemmer = PorterStemmer()
 STOPWORDS = set(stopwords.words('english'))
 
@@ -18,8 +26,13 @@ def preprocess(text):
     text = [stemmer.stem(word) for word in text if word not in STOPWORDS]
     return ' '.join(text)
 
-# In predict button:
+st.title("Sentiment Analysis")
+user_input = st.text_area("Enter text")
+
 if st.button("Predict"):
-    processed_text = preprocess(user_input)
-    text_vector = vectorizer.transform([processed_text])  # Use PROCESSED text
-    # ... rest same
+    if user_input.strip():
+        processed = preprocess(user_input)
+        vector = vectorizer.transform([processed])
+        vector_scaled = scaler.transform(vector)  # <- Scale too!
+        pred = model.predict(vector_scaled)[0]
+        st.success("Positive 😊") if pred == 1 else st.error("Negative 😞")

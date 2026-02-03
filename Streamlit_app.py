@@ -9,7 +9,7 @@ from nltk.corpus import stopwords
 nltk.download('stopwords', quiet=True)
 
 # Load your saved files (from Colab downloads)
-with open("model_xgb.pkl", "rb") as f:    # <- Rename your app to load this
+with open("model.pkl", "rb") as f:    # <- Rename your app to load this
     model = pickle.load(f)
 with open("vectorizer.pkl", "rb") as f:
     vectorizer = pickle.load(f)

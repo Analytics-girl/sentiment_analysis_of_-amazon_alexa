@@ -13,8 +13,6 @@ with open("model.pkl", "rb") as f:    # <- Rename your app to load this
     model = pickle.load(f)
 with open("vectorizer.pkl", "rb") as f:
     vectorizer = pickle.load(f)
-with open("scaler.pkl", "rb") as f:        # <- You need scaler too!
-    scaler = pickle.load(f)
 
 # Preprocessing function (exactly like training)
 stemmer = PorterStemmer()
